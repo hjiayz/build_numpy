@@ -1,0 +1,111 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  release:
+    types: [published]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      - name: init
+        run: |
+          wget -q https://dl.google.com/android/repository/android-ndk-r22-linux-x86_64.zip
+          unzip android-ndk-r22-linux-x86_64.zip > /dev/null
+          wget -q https://github.com/hjiayz/build-ndk-python3/releases/download/v21/libs.zip
+          unzip libs.zip > /dev/null
+          wget -q https://www.python.org/ftp/python/3.9.1/Python-3.9.1.tar.xz
+          tar -xvJf Python-3.9.1.tar.xz > /dev/null
+          wget https://github.com/hjiayz/build-ndk-python3/raw/main/python.patch
+          patch Python-3.9.1/setup.py python.patch
+          wget https://github.com/hjiayz/build_blas/releases/download/0.3/openblas.zip
+          unzip openblas.zip
+      - name: build python
+        run: |
+          sudo apt remove python
+          export PATH=$PATH:$(pwd)/build/python/bin
+          cd Python-3.9.1
+          ./configure --prefix=$(pwd)/../build/python
+          make
+          make install
+          make clean
+          sudo rm /usr/bin/python3
+          sudo rm /usr/bin/python
+          sudo rm /usr/bin/python2
+          cd ..
+      - name: build
+        run: |
+          export MYPATH=$(PWD)
+          export Host=linux-x86_64
+          export NDK=$MYPATH/android-ndk-r22
+          export TOOLCHAIN=$NDK/toolchains/llvm/prebuilt/$Host
+          export TARGET=aarch64-linux-android
+          export PATH=$PATH:$MYPATH/build/python/bin
+          export CC_TARGET=aarch64-linux-android
+          export CLANGTARGET=" "
+          export API=29
+          export AR=$TOOLCHAIN/bin/$TARGET-ar
+          export AS=$TOOLCHAIN/bin/$TARGET-as
+          export CC=$TOOLCHAIN/bin/$CC_TARGET$API-clang
+          export CXX=$TOOLCHAIN/bin/$CC_TARGET$API-clang++
+          export LD=$TOOLCHAIN/bin/$TARGET-ld
+          export RANLIB=$TOOLCHAIN/bin/$TARGET-ranlib
+          export STRIP=$TOOLCHAIN/bin/$TARGET-strip
+          export READELF=$TOOLCHAIN/bin/$TARGET-readelf
+          export CFLAGS="-I$MYPATH/libffi-3.3/$TARGET/include --sysroot=$TOOLCHAIN/sysroot -fPIC"
+          export LDFLAGS="-L$MYPATH/libffi-3.3/$TARGET"
+          # export LINKFORSHARED=" "
+          export PREFIXPATH=$MYPATH/zip/$TARGET
+          $MYPATH/build/python/bin/pip3 install crossenv
+          $MYPATH/build/python/bin/python3 --version
+          $MYPATH/build/python/bin/python3 -m crossenv --sysroot $TOOLCHAIN/sysroot $TARGET/bin/python3 $MYPATH/venv/$TARGET/
+          source $MYPATH/venv/$TARGET/bin/activate
+          build-pip install cython wheel cffi numpy
+          ls
+          mkdir $MYPATH/venv/$TARGET/src
+          cd $MYPATH/venv/$TARGET/src
+          export BLAS=$MYPATH/$TARGET/lib/libopenblas.a
+          export LAPACK=$MYPATH/$TARGET/lib/libopenblas.a
+          pip download  --no-binary :all: --src $PREFIXPATH/venv/src numpy
+          unzip -q ./numpy*
+          rm numpy*zip
+          cd numpy*
+          echo "[openblas]" >  ~/.numpy-site.cfg 
+          echo "libraries = openblas" >>  ~/.numpy-site.cfg 
+          echo "library_dirs = $MYPATH/$TARGET/lib" >>  ~/.numpy-site.cfg 
+          echo "include_dirs = $MYPATH/$TARGET/include" >>  ~/.numpy-site.cfg 
+          echo "runtime_library_dirs = $MYPATH/$TARGET/lib" >>  ~/.numpy-site.cfg 
+          echo "search_static_first = true" >>  ~/.numpy-site.cfg 
+          python3 setup.py install || exit 1
+          cp -a $MYPATH/venv/$TARGET/cross/lib/python3.9/site-packages/* $MYPATH/zip/$TARGET/lib/python3.9/site-packages/
+          ls
+          cd ..
+      - name: Build zip file
+        run: |
+          cd zip
+          zip -r ../numpy.zip *
+          cd ..
+      - name: Upload Release Asset
+        uses: alexellis/upload-assets@0.2.3
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          asset_paths: '["numpy.zip"]'
