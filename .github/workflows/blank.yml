@@ -74,11 +74,12 @@ jobs:
           export READELF=$TOOLCHAIN/bin/$TARGET-readelf
           export CFLAGS="-fPIC"
           export LDFLAGS="-lm"
+          sed -i 's/build-ndk-python3/build_numpy/g' $MYPATH/$TARGET/lib/python3.9/config-3.9/Makefile
           # export LINKFORSHARED=" "
           export PREFIXPATH=$MYPATH/zip/$TARGET
           $MYPATH/build/python/bin/pip3 install crossenv
           $MYPATH/build/python/bin/python3 --version
-          $MYPATH/build/python/bin/python3 -m crossenv --sysroot $TOOLCHAIN/sysroot $TARGET/bin/python3 $MYPATH/venv/$TARGET/
+          $MYPATH/build/python/bin/python3 -m crossenv --sysroot $TOOLCHAIN/sysroot $MYPATH/$TARGET/bin/python3 $MYPATH/venv/$TARGET/
           source $MYPATH/venv/$TARGET/bin/activate
           build-pip install cython wheel cffi numpy
           ls
