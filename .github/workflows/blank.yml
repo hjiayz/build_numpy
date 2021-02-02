@@ -54,9 +54,11 @@ jobs:
       - name: build
         run: |
           export MYPATH=$(pwd)
+          echo mypath : $MYPATH
           export Host=linux-x86_64
           export NDK=$MYPATH/android-ndk-r22
           export TOOLCHAIN=$NDK/toolchains/llvm/prebuilt/$Host
+          echo toolchain : $TOOLCHAIN
           export TARGET=aarch64-linux-android
           export PATH=$PATH:$MYPATH/build/python/bin
           export CC_TARGET=aarch64-linux-android
@@ -70,8 +72,8 @@ jobs:
           export RANLIB=$TOOLCHAIN/bin/$TARGET-ranlib
           export STRIP=$TOOLCHAIN/bin/$TARGET-strip
           export READELF=$TOOLCHAIN/bin/$TARGET-readelf
-          export CFLAGS="-I$MYPATH/libffi-3.3/$TARGET/include --sysroot=$TOOLCHAIN/sysroot -fPIC"
-          export LDFLAGS="-L$MYPATH/libffi-3.3/$TARGET"
+          export CFLAGS="-fPIC"
+          export LDFLAGS="-lm"
           # export LINKFORSHARED=" "
           export PREFIXPATH=$MYPATH/zip/$TARGET
           $MYPATH/build/python/bin/pip3 install crossenv
