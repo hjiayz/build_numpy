@@ -53,7 +53,7 @@ jobs:
           cd ..
       - name: build
         run: |
-          export MYPATH=$(PWD)
+          export MYPATH=$(pwd)
           export Host=linux-x86_64
           export NDK=$MYPATH/android-ndk-r22
           export TOOLCHAIN=$NDK/toolchains/llvm/prebuilt/$Host
