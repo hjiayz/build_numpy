@@ -38,6 +38,8 @@ jobs:
           patch Python-3.9.1/setup.py python.patch
           wget https://github.com/hjiayz/build_blas/releases/download/0.3/openblas.zip
           unzip openblas.zip
+          sudo apt install gfortran-9-aarch64-linux-gnu
+          
       - name: build python
         run: |
           sudo apt remove python
@@ -99,9 +101,8 @@ jobs:
           echo "include_dirs = $MYPATH/$TARGET/include" >>  ~/.numpy-site.cfg 
           echo "runtime_library_dirs = $MYPATH/$TARGET/lib" >>  ~/.numpy-site.cfg 
           echo "search_static_first = true" >>  ~/.numpy-site.cfg 
+          export FC=aarch64-linux-gnu-gfortran-9
           python3 setup.py install || exit 1
-          mkdir $MYPATH/zip
-          mkdir $MYPATH/zip/$TARGET
           ls
           cd ..
           pip download  --no-binary :all: --src $PREFIXPATH/src scipy
@@ -110,6 +111,8 @@ jobs:
           cd scipy*
           python3 setup.py install || exit 1
           cd ..
+          mkdir $MYPATH/zip
+          mkdir $MYPATH/zip/$TARGET
           cp -a $MYPATH/venv/$TARGET/cross/lib/python3.9/site-packages/* $MYPATH/zip/$TARGET/
       - name: Build zip file
         run: |
