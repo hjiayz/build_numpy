@@ -78,7 +78,7 @@ jobs:
           sed -i 's/build-ndk-python3/build_numpy/g' $MYPATH/$TARGET/lib/python3.9/_sysconfigdata__linux_.py
           rm -rf $MYPATH/$TARGET/lib/python3.9/__pycache__
           # export LINKFORSHARED=" "
-          export PREFIXPATH=$MYPATH/zip/$TARGET
+          export PREFIXPATH=$MYPATH/venv/$TARGET
           $MYPATH/build/python/bin/pip3 install crossenv
           $MYPATH/build/python/bin/python3 --version
           $MYPATH/build/python/bin/python3 -m crossenv --sysroot $TOOLCHAIN/sysroot $MYPATH/$TARGET/bin/python3 $MYPATH/venv/$TARGET/
@@ -89,7 +89,7 @@ jobs:
           cd $MYPATH/venv/$TARGET/src
           export BLAS=$MYPATH/$TARGET/lib/libopenblas.a
           export LAPACK=$MYPATH/$TARGET/lib/libopenblas.a
-          pip download  --no-binary :all: --src $PREFIXPATH/venv/src numpy
+          pip download  --no-binary :all: --src $PREFIXPATH/src numpy
           unzip -q ./numpy*
           rm numpy*zip
           cd numpy*
@@ -100,8 +100,17 @@ jobs:
           echo "runtime_library_dirs = $MYPATH/$TARGET/lib" >>  ~/.numpy-site.cfg 
           echo "search_static_first = true" >>  ~/.numpy-site.cfg 
           python3 setup.py install || exit 1
+          mkdir $MYPATH/zip/$TARGET/lib/python3.9/site-packages
           cp -a $MYPATH/venv/$TARGET/cross/lib/python3.9/site-packages/* $MYPATH/zip/$TARGET/lib/python3.9/site-packages/
           ls
+          cd ..
+          pip download  --no-binary :all: --src $PREFIXPATH/src scipy
+          unzip -q ./scipy*.zip
+          tar xzvf ./scipy*.tar.gz
+          rm scipy*zip
+          rm scipy*gz
+          cd scipy*
+          python3 setup.py install || exit 1
           cd ..
       - name: Build zip file
         run: |
