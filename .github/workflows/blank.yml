@@ -109,7 +109,7 @@ jobs:
           tar xzvf ./scipy*.tar.gz
           rm scipy*gz
           cd scipy*
-          python3 setup.py install || exit 1
+          python3 setup.py --fcompiler=$FC install || exit 1
           cd ..
           mkdir $MYPATH/zip
           mkdir $MYPATH/zip/$TARGET
