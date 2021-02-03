@@ -85,7 +85,7 @@ jobs:
           $MYPATH/build/python/bin/python3 --version
           $MYPATH/build/python/bin/python3 -m crossenv --sysroot $TOOLCHAIN/sysroot $MYPATH/$TARGET/bin/python3 $MYPATH/venv/$TARGET/
           source $MYPATH/venv/$TARGET/bin/activate
-          build-pip install cython wheel cffi pybind11
+          build-pip install cython wheel cffi pybind11 numpy
           ls
           mkdir $MYPATH/venv/$TARGET/src
           cd $MYPATH/venv/$TARGET/src
@@ -104,8 +104,8 @@ jobs:
           export FC=/usr/bin/aarch64-linux-gnu-gfortran-9
           sudo update-alternatives --install /usr/bin/gfortran gfortran $FC 40  
           python3 setup.py install || exit 1
-          cp -a $MYPATH/venv/$TARGET/cross/lib/python3.9/site-packages/numpy-1.19.5-py3.9-linux-aarch64.egg $MYPATH/venv/$TARGET/build/lib/python3.9/site-packages/
-          echo ./numpy-1.19.5-py3.9-linux-aarch64.egg >> easy-install.pth
+          rm -rf  $MYPATH/venv/$TARGET/build/lib/python3.9/site-packages/numpy
+          cp -a $MYPATH/venv/$TARGET/cross/lib/python3.9/site-packages/numpy-1.19.5-py3.9-linux-aarch64.egg/numpy $MYPATH/venv/$TARGET/build/lib/python3.9/site-packages/
           ls
           cd ..
           pip download --no-binary :all: --src $PREFIXPATH/src scipy
