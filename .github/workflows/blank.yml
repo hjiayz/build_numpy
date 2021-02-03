@@ -105,9 +105,7 @@ jobs:
           ls
           cd ..
           pip download  --no-binary :all: --src $PREFIXPATH/src scipy
-          unzip -q ./scipy*.zip
           tar xzvf ./scipy*.tar.gz
-          rm scipy*zip
           rm scipy*gz
           cd scipy*
           python3 setup.py install || exit 1
