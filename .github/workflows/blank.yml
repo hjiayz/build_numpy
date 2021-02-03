@@ -112,6 +112,7 @@ jobs:
           cd scipy*
           python3 setup.py install || exit 1
           cd ..
+          cp -a $MYPATH/venv/$TARGET/cross/lib/python3.9/site-packages/* $MYPATH/zip/$TARGET/lib/python3.9/site-packages/
       - name: Build zip file
         run: |
           cd zip
