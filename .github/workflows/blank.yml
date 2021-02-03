@@ -74,7 +74,9 @@ jobs:
           export READELF=$TOOLCHAIN/bin/$TARGET-readelf
           export CFLAGS="-fPIC"
           export LDFLAGS="-lm"
+          ls $MYPATH/$TARGET/lib/python3.9/config-3.9/Makefile
           sed -i 's/build-ndk-python3/build_numpy/g' $MYPATH/$TARGET/lib/python3.9/config-3.9/Makefile
+          cat $MYPATH/$TARGET/lib/python3.9/config-3.9/Makefile
           # export LINKFORSHARED=" "
           export PREFIXPATH=$MYPATH/zip/$TARGET
           $MYPATH/build/python/bin/pip3 install crossenv
