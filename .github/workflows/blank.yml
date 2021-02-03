@@ -83,7 +83,7 @@ jobs:
           $MYPATH/build/python/bin/python3 --version
           $MYPATH/build/python/bin/python3 -m crossenv --sysroot $TOOLCHAIN/sysroot $MYPATH/$TARGET/bin/python3 $MYPATH/venv/$TARGET/
           source $MYPATH/venv/$TARGET/bin/activate
-          build-pip install cython wheel cffi numpy
+          build-pip install cython wheel cffi numpy pybind11
           ls
           mkdir $MYPATH/venv/$TARGET/src
           cd $MYPATH/venv/$TARGET/src
