@@ -104,8 +104,10 @@ jobs:
           export FC=/usr/bin/aarch64-linux-gnu-gfortran-9
           sudo update-alternatives --install /usr/bin/gfortran gfortran $FC 40  
           python3 setup.py install || exit 1
-          rm -rf  $MYPATH/venv/$TARGET/build/lib/python3.9/site-packages/numpy
-          cp -a $MYPATH/venv/$TARGET/cross/lib/python3.9/site-packages/numpy-*-linux-aarch64.egg/numpy $MYPATH/venv/$TARGET/build/lib/python3.9/site-packages/
+          rm -f  $MYPATH/venv/$TARGET/build/lib/python3.9/site-packages/numpy/core/lib/libnpymath.a
+          rm -f  $MYPATH/venv/$TARGET/build/lib/python3.9/site-packages/numpy/random/lib/libnpyrandom.a
+          cp -a $MYPATH/venv/$TARGET/cross/lib/python3.9/site-packages/numpy-*-linux-aarch64.egg/numpy/core/lib/libnpymath.a $MYPATH/venv/$TARGET/build/lib/python3.9/site-packages/numpy/core/lib/libnpymath.a
+          cp -a $MYPATH/venv/$TARGET/cross/lib/python3.9/site-packages/numpy-*-linux-aarch64.egg/numpy/random/lib/libnpyrandom.a $MYPATH/venv/$TARGET/build/lib/python3.9/site-packages/numpy/random/lib/libnpyrandom.a
           ls
           cd ..
           pip download --no-binary :all: --src $PREFIXPATH/src scipy
