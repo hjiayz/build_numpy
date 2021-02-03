@@ -101,7 +101,7 @@ jobs:
           echo "include_dirs = $MYPATH/$TARGET/include" >>  ~/.numpy-site.cfg 
           echo "runtime_library_dirs = $MYPATH/$TARGET/lib" >>  ~/.numpy-site.cfg 
           echo "search_static_first = true" >>  ~/.numpy-site.cfg 
-          export FC=aarch64-linux-gnu-gfortran-9
+          export FC=/usr/bin/aarch64-linux-gnu-gfortran-9
           sudo update-alternatives --install /usr/bin/gfortran gfortran $FC 40  
           python3 setup.py install || exit 1
           ls
