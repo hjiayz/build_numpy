@@ -100,8 +100,8 @@ jobs:
           echo "runtime_library_dirs = $MYPATH/$TARGET/lib" >>  ~/.numpy-site.cfg 
           echo "search_static_first = true" >>  ~/.numpy-site.cfg 
           python3 setup.py install || exit 1
-          mkdir $MYPATH/zip/$TARGET/lib/python3.9/site-packages
-          cp -a $MYPATH/venv/$TARGET/cross/lib/python3.9/site-packages/* $MYPATH/zip/$TARGET/lib/python3.9/site-packages/
+          mkdir $MYPATH/zip
+          mkdir $MYPATH/zip/$TARGET
           ls
           cd ..
           pip download  --no-binary :all: --src $PREFIXPATH/src scipy
@@ -112,7 +112,7 @@ jobs:
           cd scipy*
           python3 setup.py install || exit 1
           cd ..
-          cp -a $MYPATH/venv/$TARGET/cross/lib/python3.9/site-packages/* $MYPATH/zip/$TARGET/lib/python3.9/site-packages/
+          cp -a $MYPATH/venv/$TARGET/cross/lib/python3.9/site-packages/* $MYPATH/zip/$TARGET/lib/
       - name: Build zip file
         run: |
           cd zip
