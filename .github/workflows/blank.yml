@@ -76,6 +76,7 @@ jobs:
           export LDFLAGS="-lm"
           sed -i 's/build-ndk-python3/build_numpy/g' $MYPATH/$TARGET/lib/python3.9/config-3.9/Makefile
           sed -i 's/build-ndk-python3/build_numpy/g' $MYPATH/$TARGET/lib/python3.9/_sysconfigdata__linux_.py
+          rm -rf $MYPATH/$TARGET/lib/python3.9/__pycache__
           # export LINKFORSHARED=" "
           export PREFIXPATH=$MYPATH/zip/$TARGET
           $MYPATH/build/python/bin/pip3 install crossenv
